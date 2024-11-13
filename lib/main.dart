@@ -1,7 +1,9 @@
 import 'dart:io';  // Import the required library for HttpOverrides
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/users/dashboard.dart';
 import 'package:get/get.dart';
 import 'views/users/login_page.dart';  
+import 'package:flutter_application_1/services/userInfoRemember.dart';
 
 void main() {
   // Disable SSL validation
@@ -23,9 +25,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FutureBuilder(
-        future: Future.delayed(Duration(seconds: 2)),  // Add a future
+        future: Userinforemember.readUser(),
         builder: (context, dataSnapShot) {
-          return LoginPage(); 
+          if(dataSnapShot.data == null){
+            return LoginPage(); 
+          }else{
+            return Dashboard();
+          }
         },
       ),
     );

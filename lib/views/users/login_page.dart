@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/users/authenticationController.dart';
 import 'package:flutter_application_1/models/dangki.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/services/userInfoRemember.dart';
@@ -19,46 +20,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthenticationController _authController = Get.put(AuthenticationController());
   final _formKey = GlobalKey<FormState>();
   var isObsecure = true.obs;
-
-  _login() async {
-    try {
-    var res = await http.post(
-        Uri.parse(API.logIn),
-        body: {
-          "user_email": _emailController.text.trim(),
-          "user_password": _passwordController.text.trim(),
-        }
-      );
-
-    if (res.statusCode == 200) {
-        var resbodyLogin = jsonDecode(res.body);
-        if(resbodyLogin['successLogin'] == true){
-          Fluttertoast.showToast(msg: 'dang nhap thanh cong');
-          
-
-          //save unserinfoRemember to local store prefence
-          Dangki userInfo = Dangki.fromJson(resbodyLogin['userData']);
-
-          await Userinforemember.saveRememberUser(userInfo);
-      
-          //chuyen huong den dashboard
-          Future.delayed(Duration(milliseconds: 2000), (){
-                  Get.to(() => Dashboard());
-                });
-          
-        }else{
-          Fluttertoast.showToast(msg: 'sai tên tài khoản mật khẩu');
-        }
-    } else {
-      throw Exception('Failed to sign up');
-    }
-    } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
-      print(e.toString());
-    }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +97,12 @@ class _LoginPageState extends State<LoginPage> {
 
               // Login button
               ElevatedButton(
-                onPressed: (){
-                if (_formKey.currentState!.validate()) { // Correct way to access validate() on FormState
-                  _login();
-                }
+                onPressed: () async{
+                  if (_formKey.currentState!.validate()) { // Correct way to access validate() on FormState
+                    String email = _emailController.text.trim();
+                    String password = _passwordController.text.trim();
+                    await _authController.loginUser(email, password);
+                  }
                 },
                 child: Text('Login'),
                 style: ElevatedButton.styleFrom(

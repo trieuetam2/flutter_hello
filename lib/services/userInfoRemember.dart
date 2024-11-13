@@ -13,7 +13,7 @@ class Userinforemember {
     
   }
 
-  //read user
+  //function read user
   static Future<Dangki?> readUser() async{
     Dangki? currentuser;
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -27,8 +27,15 @@ class Userinforemember {
     return currentuser;
   }
 
+//logout remove user from local store
+  static Future<void> removeUser() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.remove("currentUser");
+  }
+
 }
 
+//get userinfo to profile
 class CurrentUSer extends GetxController{
   Rx<Dangki> _currentUser = Dangki(0, '', '', '').obs;
 
@@ -39,3 +46,4 @@ class CurrentUSer extends GetxController{
     _currentUser.value = getUserInfoFromLocal!;
   }
 }
+
