@@ -48,6 +48,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
         if (registrationSuccess) {
           Fluttertoast.showToast(msg: 'Đăng kí thành công');
+          setState(() {
+            _nameController.clear();
+            _emailController.clear();
+            _passwordController.clear();
+          });
         } else {
           Fluttertoast.showToast(msg: 'Đăng kí thất bại');
         }

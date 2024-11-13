@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/dangki.dart';
+import 'package:flutter_application_1/services/api_connection.dart';
+import 'package:flutter_application_1/services/userInfoRemember.dart';
+import 'package:flutter_application_1/views/users/dashboard.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Để làm việc với JSON
@@ -17,11 +22,42 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   var isObsecure = true.obs;
 
-Future<void> _login() async {
-  if (_formKey.currentState?.validate() ?? false) {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-  }
+  _login() async {
+    try {
+    var res = await http.post(
+        Uri.parse(API.logIn),
+        body: {
+          "user_email": _emailController.text.trim(),
+          "user_password": _passwordController.text.trim(),
+        }
+      );
+
+    if (res.statusCode == 200) {
+        var resbodyLogin = jsonDecode(res.body);
+        if(resbodyLogin['successLogin'] == true){
+          Fluttertoast.showToast(msg: 'dang nhap thanh cong');
+          
+
+          //save unserinfoRemember to local store prefence
+          Dangki userInfo = Dangki.fromJson(resbodyLogin['userData']);
+
+          await Userinforemember.saveRememberUser(userInfo);
+      
+          //chuyen huong den dashboard
+          Future.delayed(Duration(milliseconds: 2000), (){
+                  Get.to(() => Dashboard());
+                });
+          
+        }else{
+          Fluttertoast.showToast(msg: 'sai tên tài khoản mật khẩu');
+        }
+    } else {
+      throw Exception('Failed to sign up');
+    }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+      print(e.toString());
+    }
 }
 
   @override
@@ -97,7 +133,11 @@ Future<void> _login() async {
 
               // Login button
               ElevatedButton(
-                onPressed: _login,
+                onPressed: (){
+                if (_formKey.currentState!.validate()) { // Correct way to access validate() on FormState
+                  _login();
+                }
+                },
                 child: Text('Login'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 50),

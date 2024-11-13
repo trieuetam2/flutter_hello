@@ -47,4 +47,6 @@ class AuthenticationController extends GetxController {
       return false;
     }
   }
+
+  
 }
