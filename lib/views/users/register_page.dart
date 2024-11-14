@@ -36,15 +36,18 @@ class _RegisterPageState extends State<RegisterPage> {
       if (emailExists) {
         Fluttertoast.showToast(msg: 'Email đã được đăng kí, hãy chọn email khác!');
       } else {
-        // Proceed with registration if email does not exist
+
+        //tao moi dang ky
         Dangki userModel = Dangki(
           1,
           _nameController.text.trim(),
           email,
           _passwordController.text.trim(),
+          2,
         );
 
         bool registrationSuccess = await _authController.registerUser(userModel);
+        
 
         if (registrationSuccess) {
           Fluttertoast.showToast(msg: 'Đăng kí thành công');

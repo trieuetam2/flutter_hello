@@ -37,7 +37,7 @@ class Userinforemember {
 
 //get userinfo to profile
 class CurrentUSer extends GetxController{
-  Rx<Dangki> _currentUser = Dangki(0, '', '', '').obs;
+  Rx<Dangki> _currentUser = Dangki(0, '', '', '', 0).obs;
 
   Dangki get user => _currentUser.value;
 

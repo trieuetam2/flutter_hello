@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_application_1/models/dangki.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
+import 'package:flutter_application_1/views/admin/admin_dashboard.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -68,12 +69,20 @@ class AuthenticationController extends GetxController {
 
           // Save user data in local storage using your saveRememberUser method
           Dangki userInfo = Dangki.fromJson(resbodyLogin['userData']);
-          await Userinforemember.saveRememberUser(userInfo);
 
-          // You can use Get.to() to navigate to the dashboard
-          Future.delayed(Duration(milliseconds: 2000), () {
-            Get.to(() => Dashboard());
-          });
+          if (userInfo.id_role == 1) {
+            Future.delayed(Duration(milliseconds: 2000), () {
+              Get.to(() => AdminDashboard());
+            });
+          }
+          else{
+            await Userinforemember.saveRememberUser(userInfo);
+
+            // You can use Get.to() to navigate to the dashboard
+            Future.delayed(Duration(milliseconds: 2000), () {
+              Get.to(() => Dashboard());
+            });
+          }
 
           return true; // Login successful
         } else {
