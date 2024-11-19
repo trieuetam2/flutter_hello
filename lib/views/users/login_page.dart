@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                 width: MediaQuery.of(context).size.width,
 
                 height: 100,
-                child: Image.asset("lib/assets/img/pig.png"),
+                child: Image.asset("assets/img/pig.png"),
               ),
               SizedBox(height: 20),
               // Email field
