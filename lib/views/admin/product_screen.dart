@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/views/admin/add_product_screen.dart';
+import 'package:flutter_application_1/views/admin/edit_product_screen.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -36,6 +37,7 @@ class _ProductScreenState extends State<ProductScreen> {
           // Convert product data into a list of maps and update state
           products = productList.map((product) {
             return {
+              "id_sanpham": product['id_sanpham'],
               "tensp": product['tensp'],
               "anhsp": product['anhsp'],
               "giasp": product['giasp'],
@@ -46,6 +48,77 @@ class _ProductScreenState extends State<ProductScreen> {
     } else {
       print('Failed to load products: ${response.statusCode}');
     }
+  }
+
+  Future<void> deleteProduct(String productId) async {
+  // Thực hiện gọi API xóa sản phẩm
+  final response = await http.post(
+    Uri.parse(API.deleteProduct),
+    body: {
+      'id_sanpham': productId,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> jsonResponse = json.decode(response.body);
+    if (jsonResponse['deleteProduct'] == true) {
+      // Nếu xóa thành công, reload lại danh sách sản phẩm
+      fetchProducts();
+    } else {
+      print('Failed to delete product');
+    }
+  } else {
+    print('Failed to delete product: ${response.statusCode}');
+  }
+}
+
+  Future<void> fetchProductDetails(String productId) async {
+      final response = await http.post(
+        Uri.parse(API.deleteProduct),
+        body: {
+          'id_sanpham': productId,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['showEditProduct'] == true && jsonResponse['product'] != null) {
+          setState(() {
+            productId = jsonResponse['product'];
+          });
+        } else {
+          print('Failed to fetch product details');
+        }
+      } else {
+        print('Failed to fetch product details: ${response.statusCode}');
+      }
+    }
+
+void showDeleteDialog(BuildContext context, String productId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this product?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng hộp thoại
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteProduct(productId); // Xóa sản phẩm
+                Navigator.of(context).pop(); // Đóng hộp thoại
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -77,8 +150,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 itemBuilder: (context, index) {
                   var product = products[index];
 
-                  return Card(
-     
+                return Card(
                   child: ListTile(
                     leading: Image.asset(
                       // Kiểm tra nếu đường dẫn hợp lệ, nếu không sử dụng hình ảnh mặc định
@@ -91,9 +163,38 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                     title: Text(product['tensp']),
                     subtitle: Text('Price: ${product['giasp']} VND'),
-                  )
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProductScreen(
+                                    productId: product['id_sanpham'],
+                                  ),
+                                ),
+                              );
+                              if (result != null && result) {
+                                fetchProducts(); // Refresh products after update
+                              }
+                            },
+                          ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Colors.red,
+                          onPressed: () {
+                            // Hiển thị hộp thoại xác nhận xóa
+                            showDeleteDialog(context, product['id_sanpham']);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
 
-                  );
                 },
               ),
       ),

@@ -52,8 +52,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
             _motaController.clear();
             _discountController.clear();
             _idDanhMucController.clear();
+
             Get.back(result: true);
-              });
+          });
         } else {
           Fluttertoast.showToast(msg: 'Thêm sản phẩm thất bại');
         }
@@ -92,7 +93,7 @@ Future<void> _saveImage(XFile pickedFile) async {
   try {
     // Get the app's document directory to store the image
     final directory = await getApplicationDocumentsDirectory();
-    this.imagePath = '${directory.path}/img_${DateTime.now().millisecondsSinceEpoch}.jpg'; // Use the global imagePath
+    this.imagePath = 'assets/img/img_${DateTime.now().millisecondsSinceEpoch}.jpg'; // Use the global imagePath
 
     // Copy the image to the new directory
     final File newImage = File(this.imagePath!);

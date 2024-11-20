@@ -1,5 +1,5 @@
 class API{
-  static const hostConnection = 'https://192.168.1.4/flutter_api';
+  static const hostConnection = 'https://192.168.1.14/flutter_api';
   static const hostConnectionUser = '$hostConnection/user';
 
   //signup user
@@ -11,4 +11,9 @@ class API{
   //add product
   static const addProduct = "$hostConnection/admin/addproduct.php";
   static const showProduct = "$hostConnection/admin/showproduct.php";
+  static const deleteProduct = "$hostConnection/admin/deleteproduct.php";
+
+  //show edit product
+  static const showEditProduct = "$hostConnection/admin/showEditProduct.php";
+  static const updateProduct = "$hostConnection/admin/updateProduct.php";
 }
