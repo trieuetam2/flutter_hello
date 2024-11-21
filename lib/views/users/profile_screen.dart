@@ -7,18 +7,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Profile"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              // Implement your sign-out logic here
-              print("Sign out");
-            },
-          ),
-        ],
-      ),
       body: Center( // Center the entire content vertically
         child: Padding(
           padding: const EdgeInsets.all(16.0),

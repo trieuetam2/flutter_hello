@@ -62,8 +62,8 @@ class AdminDashboard extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8.0), // Add left padding for spacing
                       child: DashboardCard(
-                        title: 'Revenue',
-                        value: '\$45,000',
+                        title: 'Totals',
+                        value: '\$45,00',
                         color: Colors.orange,
                         onTap: () {
                           print('Navigate to Revenue');
@@ -77,7 +77,7 @@ class AdminDashboard extends StatelessWidget {
 
               // Stats Section (Buttons for Actions)
               Text(
-                'Actions',
+                'Quản lý',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -87,15 +87,15 @@ class AdminDashboard extends StatelessWidget {
 
               // Action Buttons (Manage Users, Manage Products, View Reports)
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Flexible(
                     flex: 1,
                     child: ElevatedButton(
                       onPressed: () {
-                        print('Manage Users');
+                        print('Users');
                       },
-                      child: Text('Manage Users'),
+                      child: Text('Users'),
                     ),
                   ),
                   SizedBox(width: 10), // Adjust spacing between buttons
@@ -103,9 +103,10 @@ class AdminDashboard extends StatelessWidget {
                     flex: 1,
                     child: ElevatedButton(
                       onPressed: () {
-                        print('Manage Products');
+                        print('Products');
+                        Get.to(() => ProductScreen());
                       },
-                      child: Text('Manage Products'),
+                      child: Text('Products'),
                     ),
                   ),
                   SizedBox(width: 10), // Adjust spacing between buttons
@@ -113,9 +114,9 @@ class AdminDashboard extends StatelessWidget {
                     flex: 1,
                     child: ElevatedButton(
                       onPressed: () {
-                        print('View Reports');
+                        print('Reports');
                       },
-                      child: Text('View Reports'),
+                      child: Text('Reports'),
                     ),
                   ),
                 ],

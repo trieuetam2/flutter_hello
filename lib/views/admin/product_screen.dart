@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/views/admin/add_product_screen.dart';
 import 'package:flutter_application_1/views/admin/edit_product_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -121,6 +122,48 @@ void showDeleteDialog(BuildContext context, String productId) {
     );
   }
 
+void filterProducts(String query) async {
+  // If the query is empty, just fetch all products
+  if (query.isEmpty) {
+    fetchProducts();  // Fetch all products without filter
+    return;
+  }
+
+  try {
+    // Send search query to the server
+    final response = await http.post(
+      Uri.parse(API.searchProduct),
+      body: {'searchQuery': query},  // Sending search query to the backend
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      // Check if products are returned
+      if (data['searchProduct'] == true) {
+        setState(() {
+          products = List<Map<String, dynamic>>.from(data['products']);
+          //Fluttertoast.showToast(msg: 'tim kiem thanh cong');
+        });
+      } else {
+        // Handle case where no products are found
+        setState(() {
+          products = [];
+          fetchProducts(); 
+        });
+      }
+    } else {
+      // Handle error response
+      print('Failed to load products');
+      Fluttertoast.showToast(msg: 'tim kiem that bai');
+    }
+  } catch (e) {
+    // Handle network error
+    print('Error: $e');
+    Fluttertoast.showToast(msg: 'tim kiem error');
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,62 +184,81 @@ void showDeleteDialog(BuildContext context, String productId) {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: products.isEmpty
-            ? Container() // No loading spinner or message, just an empty body when products are not fetched
-            : ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  var product = products[index];
-
-                return Card(
-                  child: ListTile(
-                    leading: Image.asset(
-                      // Kiểm tra nếu đường dẫn hợp lệ, nếu không sử dụng hình ảnh mặc định
-                      (product["anhsp"] != null && product["anhsp"].isNotEmpty)
-                          ? product["anhsp"]  // Nếu có đường dẫn hợp lệ
-                          : 'assets/img/pig.png',  // Nếu không, sử dụng hình ảnh mặc định
-                      width: 50,  // Bạn có thể thay đổi kích thước của ảnh nếu cần
-                      height: 50,
-                      fit: BoxFit.cover,  // Điều chỉnh cách hiển thị hình ảnh
-                    ),
-                    title: Text(product['tensp']),
-                    subtitle: Text('Price: ${product['giasp']} VND'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditProductScreen(
-                                    productId: product['id_sanpham'],
-                                  ),
-                                ),
-                              );
-                              if (result != null && result) {
-                                fetchProducts(); // Refresh products after update
-                              }
-                            },
-                          ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Colors.red,
-                          onPressed: () {
-                            // Hiển thị hộp thoại xác nhận xóa
-                            showDeleteDialog(context, product['id_sanpham']);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-
-                },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Search Product',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
               ),
+              onChanged: (query) {
+                filterProducts(query); 
+              },
+            ),
+          ),
+          
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: products.isEmpty
+                    ? Container() // No loading spinner or message, just an empty body when products are not fetched
+                    : ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          var product = products[index];
+
+                          return Card(
+                            child: ListTile(
+                              leading: Image.asset(
+                                // Kiểm tra nếu đường dẫn hợp lệ, nếu không sử dụng hình ảnh mặc định
+                                (product["anhsp"] != null && product["anhsp"].isNotEmpty)
+                                    ? product["anhsp"]  // Nếu có đường dẫn hợp lệ
+                                    : 'assets/img/pig.png',  // Nếu không, sử dụng hình ảnh mặc định
+                                width: 50,  // Bạn có thể thay đổi kích thước của ảnh nếu cần
+                                height: 50,
+                                fit: BoxFit.cover,  // Điều chỉnh cách hiển thị hình ảnh
+                              ),
+                              title: Text(product['tensp']),
+                              subtitle: Text('Price: ${product['giasp']} VND'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.edit),
+                                    onPressed: () async {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditProductScreen(
+                                            productId: product['id_sanpham'],
+                                          ),
+                                        ),
+                                      );
+                                      if (result != null && result) {
+                                        fetchProducts(); // Refresh products after update
+                                      }
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      // Hiển thị hộp thoại xác nhận xóa
+                                      showDeleteDialog(context, product['id_sanpham']);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ),
+        ],
       ),
     );
   }
