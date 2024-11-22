@@ -336,7 +336,7 @@ Future<void> _saveImage(XFile pickedFile) async {
               return 'Vui lòng nhập mã giảm giá';
             }
             if (int.tryParse(value) == null) {
-              return 'Vui lòng nhập số lượng hợp lệ';
+              return 'Vui lòng nhập số lượng hợp le';
             }
             return null;
           },

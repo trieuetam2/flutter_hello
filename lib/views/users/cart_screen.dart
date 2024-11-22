@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/cartitem.dart';
 import 'package:flutter_application_1/services/cart.dart';
+import 'package:flutter_application_1/views/users/checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
   @override
@@ -111,7 +112,12 @@ class _CartScreenState extends State<CartScreen> {
                 final cartItem = cartItems[index];
                 return ListTile(
                   leading: Image.asset(cartItem.anhsp, width: 50, height: 50),
-                  title: Text(cartItem.tensp),
+                  title: Text(
+                    cartItem.tensp,
+                    maxLines: 1,  // Limit to 2 lines
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 14),
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -151,12 +157,18 @@ class _CartScreenState extends State<CartScreen> {
                     onPressed: () {
                       double total = getTotalPrice();
                       if (total > 0) {
-                        // Handle checkout logic
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please select items to checkout')),
-                        );
-                      }
+                            // Navigate to the checkout screen with the cart items
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutScreen(cartItems: cartItems),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Please select items to checkout')),
+                            );
+                          }
                     },
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
