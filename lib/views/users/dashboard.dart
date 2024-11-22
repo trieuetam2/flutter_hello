@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/users/HomeScreenController.dart';
 import 'package:flutter_application_1/services/userInfoRemember.dart';
+import 'package:flutter_application_1/views/users/cart_screen.dart';
 import 'package:flutter_application_1/views/users/detail_product_screen.dart';
 import 'package:flutter_application_1/views/users/favorites_screen.dart';
 import 'package:flutter_application_1/views/users/home_screen.dart';
@@ -89,7 +91,11 @@ class Dashboard extends StatelessWidget {
                         border: InputBorder.none,
                         prefixIcon: Icon(Icons.search, color: Colors.blue),
                       ),
+                      onChanged: (query) {
+                        Get.find<HomeScreenController>().filterProducts(query);
+                      },
                     ),
+                    
                   ),
                 ),
                 SizedBox(width: 16), // Khoảng cách giữa thanh tìm kiếm và giỏ hàng
@@ -97,8 +103,7 @@ class Dashboard extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.shopping_cart, color: Colors.white),
                   onPressed: () {
-                    // Xử lý sự kiện khi nhấn vào giỏ hàng
-                    
+                    Get.to(() => CartScreen());
                   },
                 ),
               ],

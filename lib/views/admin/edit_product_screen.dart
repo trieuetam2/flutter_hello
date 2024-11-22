@@ -21,6 +21,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   TextEditingController? priceController;
   TextEditingController? motaController;
   TextEditingController? discountController;
+  TextEditingController? soluongController;
   TextEditingController? danhmucController;
 
   @override
@@ -45,6 +46,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           priceController = TextEditingController(text: product['giasp'].toString());
           motaController = TextEditingController(text: product['mota']);
           discountController = TextEditingController(text: product['discount'].toString());
+          soluongController = TextEditingController(text: product['soluong'].toString());
           danhmucController = TextEditingController(text: product['id_danhmuc'].toString());
         });
       } else {
@@ -59,7 +61,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('Cập nhập sản phẩm'),
       ),
       body: product.isEmpty
           ? Center(child: CircularProgressIndicator()) // Chờ khi dữ liệu được tải
@@ -88,7 +90,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                   TextField(
                     controller: motaController,
-                    decoration: InputDecoration(labelText: 'Mo ta'),
+                    decoration: InputDecoration(labelText: 'Mô tả'),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       setState(() {
@@ -98,7 +100,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                   TextField(
                     controller: discountController,
-                    decoration: InputDecoration(labelText: 'Giam gia'),
+                    decoration: InputDecoration(labelText: 'Giảm giá'),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       setState(() {
@@ -107,8 +109,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     },
                   ),
                   TextField(
+                    controller: soluongController,
+                    decoration: InputDecoration(labelText: 'Số lượng'),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      setState(() {
+                        product['soluong'] = value; // Cập nhật giá trị trong product
+                      });
+                    },
+                  ),
+                  TextField(
                     controller: danhmucController,
-                    decoration: InputDecoration(labelText: 'Danh muc'),
+                    decoration: InputDecoration(labelText: 'Danh mục'),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       setState(() {
@@ -139,6 +151,7 @@ Future<void> saveProduct() async {
       'giasp': product['giasp'].toString(),  // Nếu giasp là int, chuyển thành String
       'mota': product['mota'],         // Giả sử mô tả là chuỗi
       'discount': product['discount'].toString(),  // Nếu discount là int, chuyển thành String
+      'soluong': product['soluong'].toString(),  // Nếu soluong là int, chuyển thành String
       'id_danhmuc': product['id_danhmuc'].toString(),  // Nếu id_danhmuc là int, chuyển thành String
     },
   );

@@ -9,6 +9,9 @@ class API{
   static const showClientProduct = "$hostConnection/user/showproduct.php";
   static const showCategory = "$hostConnection/user/showcategory.php";
   static const showDetailProduct = "$hostConnection/user/detailproduct.php";
+  static const showCateByID = "$hostConnection/user/showcategorybyid.php";
+  
+  
   //admin
   //add product
   static const addProduct = "$hostConnection/admin/addproduct.php";

@@ -22,6 +22,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _giaSPController = TextEditingController();
   final TextEditingController _motaController = TextEditingController();
   final TextEditingController _discountController = TextEditingController();
+  final TextEditingController _soluongController = TextEditingController();
   final TextEditingController _idDanhMucController = TextEditingController();
 
   final Addproductcontroller _addProduct = Get.put(Addproductcontroller());
@@ -38,6 +39,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           _giaSPController.text.trim(),
           _motaController.text.trim(),
           int.tryParse(_discountController.text.trim()) ?? 0,
+          int.tryParse(_soluongController.text.trim()) ?? 0,
           int.tryParse(_idDanhMucController.text.trim()) ?? 0,
         );
 
@@ -51,6 +53,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             _giaSPController.clear();
             _motaController.clear();
             _discountController.clear();
+            _soluongController.clear();
             _idDanhMucController.clear();
 
             Get.back(result: true);
@@ -181,7 +184,7 @@ Future<void> _saveImage(XFile pickedFile) async {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Add Product",
+              "Thêm sản phẩm",
               style: TextStyle(color: Colors.white),
             ),
           ],
@@ -247,6 +250,8 @@ Future<void> _saveImage(XFile pickedFile) async {
           ],
         ),
         SizedBox(height: 16),
+
+        //chọn ảnh sp
         Container(
           width: MediaQuery.of(context).size.width * 0.8, // Full width
           height: 250, // Set your desired height for the background image area
@@ -312,6 +317,26 @@ Future<void> _saveImage(XFile pickedFile) async {
             }
             if (int.tryParse(value) == null) {
               return 'Vui lòng nhập số hợp lệ';
+            }
+            return null;
+          },
+        ),
+        SizedBox(height: 16),
+
+        // Product Soluong (Soluong)
+        TextFormField(
+          controller: _soluongController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: "Số lượng",
+            prefixIcon: Icon(Icons.numbers), // Icon giảm giá
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Vui lòng nhập mã giảm giá';
+            }
+            if (int.tryParse(value) == null) {
+              return 'Vui lòng nhập số lượng hợp lệ';
             }
             return null;
           },

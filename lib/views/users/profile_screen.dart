@@ -69,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
                 });
                 },
                 child: Text(
-                  "Sign Out",
+                  "Đăng xuất",
                   style: TextStyle(
                     color: Colors.white, // Set the text color to white
                   ),

@@ -5,9 +5,10 @@ class Sanpham {
   String giasp;
   String mota;
   int discount;
+  int soluong;
   int id_danhmuc;
 
-  Sanpham(this.id_sanpham, this.tensp, this.anhsp, this.giasp, this.mota, this.discount, this.id_danhmuc);
+  Sanpham(this.id_sanpham, this.tensp, this.anhsp, this.giasp, this.mota, this.discount, this.soluong, this.id_danhmuc);
 
   factory Sanpham.fromJson(Map<String, dynamic> json){
     return Sanpham(
@@ -17,6 +18,7 @@ class Sanpham {
       json['giasp'],
       json['mota'],
       int.parse(json['discount']),
+      int.parse(json['soluong']),
       int.parse(json['id_danhmuc']),
     );
   }
@@ -28,6 +30,7 @@ class Sanpham {
     'giasp': giasp,
     'mota': mota,
     'discount': discount.toString(),
+    'soluong': soluong.toString(),
     'id_danhmuc': id_danhmuc.toString(),
   };
 }

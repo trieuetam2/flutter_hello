@@ -42,6 +42,7 @@ class _ProductScreenState extends State<ProductScreen> {
               "tensp": product['tensp'],
               "anhsp": product['anhsp'],
               "giasp": product['giasp'],
+              "soluong": product['soluong'],
             };
           }).toList();
         });
@@ -142,8 +143,17 @@ void filterProducts(String query) async {
       // Check if products are returned
       if (data['searchProduct'] == true) {
         setState(() {
-          products = List<Map<String, dynamic>>.from(data['products']);
-          //Fluttertoast.showToast(msg: 'tim kiem thanh cong');
+        products = List<Map<String, dynamic>>.from(data['products'].map((product) {
+            // Ensure each field is correctly typed
+            return {
+            "id_sanpham": product['id_sanpham'].toString(),
+            "tensp": product['tensp'],
+            "anhsp": product['anhsp'],
+            "giasp": product['giasp'].toString(),
+            "mota": product['mota'],
+            "id_danhmuc": product['id_danhmuc'].toString(),
+            };
+          }));
         });
       } else {
         // Handle case where no products are found
@@ -168,7 +178,7 @@ void filterProducts(String query) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Manager Product"),
+        title: Text("Quản lý sản phẩm"),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -190,7 +200,7 @@ void filterProducts(String query) async {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
-                labelText: 'Search Product',
+                labelText: 'Tìm kiếm sản phẩm',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),
               ),
