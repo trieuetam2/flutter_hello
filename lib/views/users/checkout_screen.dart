@@ -6,6 +6,7 @@ import 'package:flutter_application_1/models/dathang.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/services/cart.dart';
 import 'package:flutter_application_1/services/userInfoRemember.dart';
+import 'package:flutter_application_1/views/users/success_order.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -44,8 +45,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // Send data to the server to save the order
 Future<void> checkout() async {
   final String name = _nameController.text;
-  final String address = _addressController.text;
   final String phone = _phoneController.text;
+  final String address = _addressController.text;
 
   if (name.isEmpty || address.isEmpty || phone.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -59,11 +60,14 @@ Future<void> checkout() async {
     id_dathang: 1,
     madathang: 'MDH${DateTime.now().millisecondsSinceEpoch}', // Unique order ID (could be more sophisticated)
     makh: 'MKH${_currentUser.user.user_id}',
-    trangthai: 'Pending',
+    trangthai: 'Chờ xác nhận',
     tongtien: getTotalPrice(),
     ngaydathang: DateTime.now(),
     giaohang: 'COD',
     id_kh: _currentUser.user.user_id,
+    tenkh: name,
+    sdt: phone,
+    diachi: address
   );
 
   // Prepare the order details (chitiet_donhang) from the cart items
@@ -78,7 +82,7 @@ Future<void> checkout() async {
       giamgia: 0,  // Assuming no discount
       giatien: item.giasp,
       tongtien: item.giasp * item.soluong,
-      trangthai: 'Pending',
+      trangthai: 'Chờ xác nhận',
       ngaydat: DateTime.now(),
       id_dathang: order.id_dathang,
       id_kh: order.id_kh,
@@ -94,6 +98,9 @@ Future<void> checkout() async {
     'ngaydathang': order.ngaydathang.toIso8601String(),
     'giaohang': order.giaohang,
     'id_kh': order.id_kh,
+    'tenkh': order.tenkh,
+    'sdt': order.sdt,
+    'diachi': order.diachi,
     'chitiet': orderDetails.map((item) => item.toJson()).toList(), // Order details
   };
 
@@ -107,6 +114,13 @@ Future<void> checkout() async {
     var resBody = jsonDecode(response.body);
     if (resBody['successAddOrder'] == true) {
       Fluttertoast.showToast(msg: 'Đặt hàng thành công');
+      SharedPreferencesCart.clearCart();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SuccessOrderScreen()),
+      );
+
     } else {
       Fluttertoast.showToast(msg: 'Đặt hàng thất bại');
     }

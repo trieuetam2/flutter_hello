@@ -11,6 +11,8 @@ class API{
   static const showDetailProduct = "$hostConnection/user/detailproduct.php";
   static const showCateByID = "$hostConnection/user/showcategorybyid.php";
   static const saveOrder = "$hostConnection/user/saveorder.php";
+  static const showOrderByID = "$hostConnection/user/showorderbyid.php";
+  static const showdetailOrder = "$hostConnection/user/showdetailorder.php";
   
   //admin
   //add product

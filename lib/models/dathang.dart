@@ -7,6 +7,9 @@ class Dathang {
   DateTime ngaydathang;
   String giaohang;
   int id_kh;
+  String tenkh;
+  String sdt;
+  String diachi;
 
   Dathang({
     required this.id_dathang,
@@ -17,6 +20,9 @@ class Dathang {
     required this.ngaydathang,
     required this.giaohang,
     required this.id_kh,
+    required this.tenkh,
+    required this.sdt,
+    required this.diachi
   });
 
   // Updated factory constructor for creating from JSON
@@ -29,7 +35,10 @@ class Dathang {
       tongtien: int.parse(json['tongtien'].toString()), // Parsing to int
       ngaydathang: DateTime.parse(json['ngaydathang']), // Parsing string to DateTime
       giaohang: json['giaohang'],
-      id_kh: int.parse(json['id_kh'].toString()), // Parsing to int to int
+      id_kh: int.parse(json['id_kh'].toString()), 
+      tenkh: json['tenkh'], 
+      sdt: json['sdt'],
+      diachi: json['diachi'],
     );
   }
 
@@ -44,6 +53,9 @@ class Dathang {
       'ngaydathang': ngaydathang.toIso8601String(), // Format DateTime to ISO string
       'giaohang': giaohang,
       'id_kh': id_kh.toString(),
+      'tenkh': tenkh,
+      'sdt': sdt,
+      'diachi': diachi
     };
   }
 }
