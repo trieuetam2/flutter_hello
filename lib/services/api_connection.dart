@@ -15,13 +15,19 @@ class API{
   static const showdetailOrder = "$hostConnection/user/showdetailorder.php";
   
   //admin
-  //add product
+
+  //product
   static const addProduct = "$hostConnection/admin/addproduct.php";
   static const showProduct = "$hostConnection/admin/showproduct.php";
   static const deleteProduct = "$hostConnection/admin/deleteproduct.php";
-
-  //show edit product
   static const showEditProduct = "$hostConnection/admin/showEditProduct.php";
   static const updateProduct = "$hostConnection/admin/updateProduct.php";
   static const searchProduct = "$hostConnection/admin/searchProduct.php";
+
+  //category
+  static const addCategory = "$hostConnection/admin/addcategory.php";
+  static const deleteCategory = "$hostConnection/admin/deletecategory.php";
+  static const editCategory = "$hostConnection/admin/editcategory.php";
+  static const updateCategory = "$hostConnection/admin/updateCategory.php";
+  static const searchCategory = "$hostConnection/admin/searchCategory.php";
 }

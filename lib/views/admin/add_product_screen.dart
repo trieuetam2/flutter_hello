@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/admin/addProductController.dart';
 import 'package:flutter_application_1/models/sanpham.dart';
+import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-
 import 'package:get/get.dart';
 import 'package:img_picker/img_picker.dart'; // For file handling
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class AddProductScreen extends StatefulWidget {
   @override
@@ -16,7 +18,7 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controller for text fields
+  // Controllers for text fields
   final TextEditingController _tenSPController = TextEditingController();
   final TextEditingController _anhSPController = TextEditingController();
   final TextEditingController _giaSPController = TextEditingController();
@@ -27,151 +29,78 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   final Addproductcontroller _addProduct = Get.put(Addproductcontroller());
 
-  // Function to submit the form
-  void _submitForm() async{
-    if (_formKey.currentState!.validate()) {
+  // List to hold fetched categories
+  List<Map<String, String>> categories = [];
 
-        //tao moi sanpham
-        Sanpham addProductModel = Sanpham(
-          1,
-          _tenSPController.text.trim(),
-          _anhSPController.text.trim(),
-          _giaSPController.text.trim(),
-          _motaController.text.trim(),
-          int.tryParse(_discountController.text.trim()) ?? 0,
-          int.tryParse(_soluongController.text.trim()) ?? 0,
-          int.tryParse(_idDanhMucController.text.trim()) ?? 0,
-        );
+  // Fetch categories from API
+  Future<void> fetchCategories() async {
+    try {
+      final response = await http.get(Uri.parse(API.showCategory));
 
-        bool addProductsuccess = await _addProduct.addProducts(addProductModel);
-        
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-        if (addProductsuccess) {
-          Fluttertoast.showToast(msg: 'Thêm sản phẩm thành công');
+        if (data['showCategory'] == true) {
+          // Process categories into a list of maps containing 'id_danhmuc' and 'ten_danhmuc'
+          List<Map<String, String>> tempCategories = [];
+          for (var category in data['categories']) {
+            tempCategories.add({
+              'id_danhmuc': category['id_danhmuc'],
+              'ten_danhmuc': category['ten_danhmuc'],
+            });
+          }
           setState(() {
-            _tenSPController.clear();
-            _giaSPController.clear();
-            _motaController.clear();
-            _discountController.clear();
-            _soluongController.clear();
-            _idDanhMucController.clear();
-
-            Get.back(result: true);
+            categories = tempCategories;
           });
         } else {
-          Fluttertoast.showToast(msg: 'Thêm sản phẩm thất bại');
+          Fluttertoast.showToast(msg: "No categories found");
         }
-
+      } else {
+        Fluttertoast.showToast(msg: "Failed to load categories");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error fetching categories: $e");
     }
   }
 
-  String? imagePath;
-
-  final ImagePicker _picker = ImagePicker();
-  XFile? pickedImgXFile;
-
-  selectImgFromCamera() async {
-    pickedImgXFile = await _picker.pickImage(source: ImageSource.camera);
-    Get.back();
-    setState(() {
-      if (pickedImgXFile != null) {
-        _saveImage(pickedImgXFile!); // Lưu và cập nhật đường dẫn ảnh
-      }
-    });
-  }
-
-  selectImgFromGallery() async {
-    pickedImgXFile = await _picker.pickImage(source: ImageSource.gallery);
-    Get.back();
-    setState(() {
-      if (pickedImgXFile != null) {
-        _saveImage(pickedImgXFile!); // Lưu và cập nhật đường dẫn ảnh
-      }
-    });
-  }
-
- 
-// Function to save the picked image locally
-Future<void> _saveImage(XFile pickedFile) async {
-  try {
-    // Get the app's document directory to store the image
-    final directory = await getApplicationDocumentsDirectory();
-    this.imagePath = 'assets/img/img_${DateTime.now().millisecondsSinceEpoch}.jpg'; // Use the global imagePath
-
-    // Copy the image to the new directory
-    final File newImage = File(this.imagePath!);
-    await pickedFile.saveTo(this.imagePath!);
-
-    // Update the image controller with the new image path
-    setState(() {
-      _anhSPController.text = this.imagePath!; // Set the image path to controller for uploading (if needed)
-    });
-  } catch (e) {
-    Fluttertoast.showToast(msg: "Failed to save image: $e");
-  }
-}
-
-
-  //show img when pick
-  Widget showImgWhenPicked(){
-    return Container(
-      height: 150,
-      width: 240,
-      decoration: BoxDecoration(
-      image: DecorationImage(
-        image: FileImage(
-          File(pickedImgXFile!.path),),),
-      ),
-    );
-  }
-
-  showDialogBoxImg(){
-    return showDialog(context: context, builder: (context){
-      return SimpleDialog(
-        title: const Text( "Chọn ảnh sản phẩm",
-          style: const TextStyle(color: Colors.blue),
-        ),
-
-        children: [
-          SimpleDialogOption(
-            onPressed: (){  
-                selectImgFromCamera();
-            },
-            child: const Text(
-              "Chọn từ camera",
-              style: TextStyle(
-                color: Colors.black54,
-
-              ),
-            ),
-          ),
-                  SimpleDialogOption(
-            onPressed: (){
-                selectImgFromGallery();
-            },
-            child: const Text(
-              "Chọn từ thư viện ảnh",
-              style: TextStyle(
-                color: Colors.black54,
-
-              ),
-            ),
-          ),
-                    SimpleDialogOption(
-            onPressed: (){
-              Get.back();
-            },
-            child: const Text(
-              "Hủy",
-              style: TextStyle(
-                color: Colors.red,
-
-              ),
-            ),
-          ),
-        ],
+  // Function to submit the form
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Create product model
+      Sanpham addProductModel = Sanpham(
+        1,
+        _tenSPController.text.trim(),
+        _anhSPController.text.trim(),
+        _giaSPController.text.trim(),
+        _motaController.text.trim(),
+        int.tryParse(_discountController.text.trim()) ?? 0,
+        int.tryParse(_soluongController.text.trim()) ?? 0,
+        int.tryParse(_idDanhMucController.text.trim()) ?? 0,
       );
-    });
+
+      bool addProductSuccess = await _addProduct.addProducts(addProductModel);
+
+      if (addProductSuccess) {
+        Fluttertoast.showToast(msg: 'Thêm sản phẩm thành công');
+        setState(() {
+          _tenSPController.clear();
+          _giaSPController.clear();
+          _motaController.clear();
+          _discountController.clear();
+          _soluongController.clear();
+          _idDanhMucController.clear();
+          Get.back(result: true);
+        });
+      } else {
+        Fluttertoast.showToast(msg: 'Thêm sản phẩm thất bại');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();  // Fetch categories when the screen is initialized
   }
 
   @override
@@ -191,197 +120,153 @@ Future<void> _saveImage(XFile pickedFile) async {
         ),
       ),
       body: Padding(
-  padding: const EdgeInsets.all(16.0),
-  child: Form(
-    key: _formKey,
-    child: ListView(
-      children: [
-        // Product Name (tensp)
-        TextFormField(
-          controller: _tenSPController,
-          decoration: InputDecoration(
-            labelText: "Tên sản phẩm",
-            prefixIcon: Icon(Icons.production_quantity_limits), // Icon sản phẩm
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng nhập tên sản phẩm';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 16),
-
-        // anh san pham
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Căn chỉnh bên trái
-          children: [
-            Text(
-              'Chọn ảnh sản phẩm', // Văn bản "Chọn ảnh sản phẩm"
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey, // Màu xám cho văn bản
-              ),
-            ),
-            SizedBox(height: 16), // Khoảng cách giữa Text và TextButton
-            TextButton.icon(
-              onPressed: () {
-                showDialogBoxImg();
-              },
-              icon: Icon(
-                Icons.image, // Thêm icon hình ảnh (có thể thay đổi bằng bất kỳ icon nào khác)
-                color: Colors.blue, // Màu sắc của icon
-              ),
-              label: Text(
-                "Chọn ảnh sản phẩm", // Văn bản trên nút
-                style: TextStyle(color: Colors.blue), // Màu chữ trên nút
-              ),
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20), // Padding cho nút
-                side: BorderSide(color: Colors.blue, width: 2), // Viền màu xanh
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8), // Bo tròn các góc
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              // Product Name
+              TextFormField(
+                controller: _tenSPController,
+                decoration: InputDecoration(
+                  labelText: "Tên sản phẩm",
+                  prefixIcon: Icon(Icons.production_quantity_limits),
                 ),
-                shadowColor: Colors.black.withOpacity(0.2), // Màu bóng
-                elevation: 5, // Độ cao bóng
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập tên sản phẩm';
+                  }
+                  return null;
+                },
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 16),
+              SizedBox(height: 16),
 
-        //chọn ảnh sp
-        Container(
-          width: MediaQuery.of(context).size.width * 0.8, // Full width
-          height: 250, // Set your desired height for the background image area
-          decoration: BoxDecoration(
-            image: pickedImgXFile != null // Check if the image is picked
-                ? DecorationImage(
-                    image: FileImage(File(pickedImgXFile!.path)),
-                    fit: BoxFit.cover, // Make the image cover the container area
-                  )
-                : null, // If no image, don't show background
+              // Product Price
+              TextFormField(
+                controller: _giaSPController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Giá",
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập giá';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Vui lòng chọn kiểu giá trị là số';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              
+              // Product Price
+              TextFormField(
+                controller: _motaController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Mô tả",
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập Mô tả';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Vui lòng chọn kiểu Mô tả trị là số';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              
+              // Product Price
+              TextFormField(
+                controller: _discountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Giảm giá",
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập Giảm giá';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Vui lòng chọn kiểu Giảm giá trị là số';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              
+              // Product Price
+              TextFormField(
+                controller: _soluongController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Số lượng",
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập Số lượng';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Vui lòng chọn kiểu Số lượng trị là số';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+
+              // Product Category
+              DropdownButtonFormField<String>(
+                value: categories.isNotEmpty ? categories[0]['id_danhmuc'] : null,
+                items: categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category['id_danhmuc'],
+                    child: Text("${category['id_danhmuc']} - ${category['ten_danhmuc']}"),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  _idDanhMucController.text = newValue!;  // Store the category ID
+                },
+                decoration: InputDecoration(
+                  labelText: "Danh mục",
+                  prefixIcon: Icon(Icons.category),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng chọn danh mục';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+
+              // Submit Button
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text(
+                  "Thêm sản phẩm",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  side: BorderSide(color: Colors.white, width: 2),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+                  elevation: 5,
+                  shadowColor: Colors.black.withOpacity(0.2),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(height: 16),
-
-        // Product Price (giasp)
-        TextFormField(
-          controller: _giaSPController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: "Giá",
-            prefixIcon: Icon(Icons.attach_money), // Icon giá tiền
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng nhập giá';
-            }
-            if (int.tryParse(value) == null) {
-              return 'Vui lòng chọn kiểu giá trị là số';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 16),
-
-        // Product Description (mota)
-        TextFormField(
-          controller: _motaController,
-          decoration: InputDecoration(
-            labelText: "Mô tả",
-            prefixIcon: Icon(Icons.description), // Icon mô tả
-          ),
-          maxLines: 3,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng nhập mô tả';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 16),
-
-        // Product Discount (discount)
-        TextFormField(
-          controller: _discountController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: "Giảm giá (%)",
-            prefixIcon: Icon(Icons.discount), // Icon giảm giá
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng nhập mã giảm giá';
-            }
-            if (int.tryParse(value) == null) {
-              return 'Vui lòng nhập số hợp lệ';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 16),
-
-        // Product Soluong (Soluong)
-        TextFormField(
-          controller: _soluongController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: "Số lượng",
-            prefixIcon: Icon(Icons.numbers), // Icon giảm giá
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng nhập mã giảm giá';
-            }
-            if (int.tryParse(value) == null) {
-              return 'Vui lòng nhập số lượng hợp le';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 16),
-
-        // Product Category ID (id_danhmuc)
-        TextFormField(
-          controller: _idDanhMucController,
-          decoration: InputDecoration(
-            labelText: "Danh mục",
-            prefixIcon: Icon(Icons.category), // Icon danh mục
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng chọn danh mục';
-            }
-            return null;
-          },
-        ),
-        SizedBox(height: 16),
-
-        // Submit Button
-        ElevatedButton(
-          onPressed: _submitForm,
-          child: Text(
-            "Thêm sản phẩm",
-            style: TextStyle(color: Colors.white), // Màu chữ trắng
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue, // Màu nền nút (blue)
-            side: BorderSide(color: Colors.white, width: 2), // Viền màu trắng
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32), // Bo tròn các góc
-            ),
-            elevation: 5, // Độ cao bóng đổ
-            shadowColor: Colors.black.withOpacity(0.2), // Màu bóng đổ
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          ),
-        ),
-      ],
-    ),
-  ),
-),
-
+      ),
     );
   }
 }
+

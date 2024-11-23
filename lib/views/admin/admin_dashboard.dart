@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/admin/category_screen.dart';
 import 'package:flutter_application_1/views/admin/product_screen.dart';
 import 'package:flutter_application_1/views/users/login_page.dart';
 import 'package:get/get.dart';
@@ -92,35 +93,71 @@ class AdminDashboard extends StatelessWidget {
                   Flexible(
                     flex: 1,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
                       onPressed: () {
                         print('Users');
                       },
-                      child: Text('Users'),
+                      child: Text(
+                        'Users',
+                        style: TextStyle(fontSize: 15), // Smaller font size
+                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                        maxLines: 1, // Keep text on one line
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10), // Adjust spacing between buttons
+                  SizedBox(width: 5), // Adjust spacing between buttons
                   Flexible(
                     flex: 1,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
                       onPressed: () {
                         print('Products');
                         Get.to(() => ProductScreen());
                       },
-                      child: Text('Products'),
+                      child: Text(
+                        'Products',
+                        style: TextStyle(fontSize: 15), // Smaller font size
+                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                        maxLines: 1, // Keep text on one line
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10), // Adjust spacing between buttons
+                  SizedBox(width: 5), // Adjust spacing between buttons
                   Flexible(
                     flex: 1,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
+                      onPressed: () {
+                        print('Category');
+                        Get.to(() => CategoryScreen());
+                      },
+                      child: Text(
+                        'Category',
+                        style: TextStyle(fontSize: 15), // Smaller font size
+                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                        maxLines: 1, // Keep text on one line
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5), // Adjust spacing between buttons
+                  Flexible(
+                    flex: 1,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
                       onPressed: () {
                         print('Reports');
                       },
-                      child: Text('Reports'),
+                      child: Text(
+                        'Reports',
+                        style: TextStyle(fontSize: 15), // Smaller font size
+                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                        maxLines: 1, // Keep text on one line
+                      ),
                     ),
                   ),
                 ],
               ),
+
             ],
           ),
         ),
@@ -239,10 +276,17 @@ class AdminDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.category),
+            leading: Icon(Icons.store),
             title: Text('Manage Products'),
             onTap: () {
               Get.to(() => ProductScreen());
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.category),
+            title: Text('Manage Categories'),
+            onTap: () {
+              Get.to(() => CategoryScreen());
             },
           ),
           ListTile(

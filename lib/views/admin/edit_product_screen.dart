@@ -28,6 +28,41 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     super.initState();
     fetchProductDetails();
+    fetchCategories();
+  }
+
+
+ List<Map<String, String>> categories = [];
+
+  // Fetch categories from API
+  Future<void> fetchCategories() async {
+    try {
+      final response = await http.get(Uri.parse(API.showCategory));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['showCategory'] == true) {
+          // Process categories into a list of maps containing 'id_danhmuc' and 'ten_danhmuc'
+          List<Map<String, String>> tempCategories = [];
+          for (var category in data['categories']) {
+            tempCategories.add({
+              'id_danhmuc': category['id_danhmuc'],
+              'ten_danhmuc': category['ten_danhmuc'],
+            });
+          }
+          setState(() {
+            categories = tempCategories;
+          });
+        } else {
+          Fluttertoast.showToast(msg: "No categories found");
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Failed to load categories");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error fetching categories: $e");
+    }
   }
 
   // Lấy chi tiết sản phẩm từ API
@@ -118,16 +153,45 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       });
                     },
                   ),
-                  TextField(
-                    controller: danhmucController,
-                    decoration: InputDecoration(labelText: 'Danh mục'),
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        product['id_danhmuc'] = value; // Cập nhật giá trị trong product
-                      });
-                    },
-                  ),
+                  // TextField(
+                  //   controller: danhmucController,
+                  //   decoration: InputDecoration(labelText: 'Danh mục'),
+                  //   keyboardType: TextInputType.number,
+                  //   onChanged: (value) {
+                  //     setState(() {
+                  //       product['id_danhmuc'] = value; // Cập nhật giá trị trong product
+                  //     });
+                  //   },
+                  // ),
+
+DropdownButtonFormField<String>(
+  value: categories.isNotEmpty
+      ? product['id_danhmuc']?.toString() ?? categories[0]['id_danhmuc']?.toString()
+      : null,  // Fallback if categories are not loaded
+  items: categories.map((category) {
+    return DropdownMenuItem<String>(
+      value: category['id_danhmuc']?.toString(),  // Convert to String
+      child: Text("${category['id_danhmuc']} - ${category['ten_danhmuc']}"),
+    );
+  }).toList(),
+  onChanged: (newValue) {
+    setState(() {
+      product['id_danhmuc'] = newValue;  // We store the selected value as a String
+    });
+  },
+  decoration: InputDecoration(
+    labelText: "Danh mục",
+    prefixIcon: Icon(Icons.category),
+  ),
+  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Vui lòng chọn danh mục';
+    }
+    return null;
+  },
+),
+
+
                   // Thêm các trường khác nếu cần
                   ElevatedButton(
                     onPressed: () {
