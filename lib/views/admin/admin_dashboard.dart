@@ -1,165 +1,189 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/api_connection.dart';
+import 'package:flutter_application_1/services/userInfoRemember.dart';
 import 'package:flutter_application_1/views/admin/category_screen.dart';
 import 'package:flutter_application_1/views/admin/product_screen.dart';
+import 'package:flutter_application_1/views/admin/user_screen.dart';
 import 'package:flutter_application_1/views/users/login_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class AdminDashboard extends StatelessWidget {
+  final CurrentUSerAdmin _currentUserAdmin = Get.put(CurrentUSerAdmin());
+
+  Future<Map<String, dynamic>> getDashboardCounts() async {
+    final url = Uri.parse(API.overViewDashboard); // Replace with your actual API URL
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON data.
+      return jsonDecode(response.body);
+    } else {
+      // If the server does not return a 200 OK response, throw an error.
+      throw Exception('Failed to load dashboard counts');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _currentUserAdmin.getUserInfoAdmin();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Admin Dashboard'),
       ),
       drawer: AdminDrawer(), // Navigation Drawer
       body: SafeArea( // Ensure content is within screen bounds
-        child: SingleChildScrollView( // Allow scrolling if content overflows vertically
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Overview Section (Cards)
-              Text(
-                'Overview',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: getDashboardCounts(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.hasData) {
+              final data = snapshot.data!;
+              
+              return SingleChildScrollView( // Allow scrolling if content overflows vertically
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Overview Section (Cards)
+                    Text(
+                      'Overview',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Cards Section (Users, Orders, Revenue)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        DashboardCard(
+                          title: 'Users',
+                          value: data['user_count'].toString(),
+                          color: Colors.blue,
+                          onTap: () {
+                            Get.to(() => UserScreen());
+                          },
+                        ),
+                        DashboardCard(
+                          title: 'Orders',
+                          value: data['order_count'].toString(),
+                          color: Colors.green,
+                          onTap: () {
+                            Get.to(() => ProductScreen());
+                          },
+                        ),
+                        DashboardCard(
+                          title: 'Total Revenue',
+                          value: '\$${data['total_revenue']}',
+                          color: Colors.orange,
+                          onTap: () {
+                            Get.to(() => CategoryScreen());
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
+                    // Stats Section (Buttons for Actions)
+                    Text(
+                      'Quản lý',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Action Buttons (Manage Users, Manage Products, View Reports)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
+                            onPressed: () {
+                              if (_currentUserAdmin.user.id_role == 3) {
+                                Fluttertoast.showToast(msg: 'Bạn không có quyền truy cập');
+                              } else {
+                                Get.to(() => UserScreen());
+                              }
+                            },
+                            child: Text(
+                              'Users',
+                              style: TextStyle(fontSize: 15), // Smaller font size
+                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                              maxLines: 1, // Keep text on one line
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5), // Adjust spacing between buttons
+                        Flexible(
+                          flex: 1,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
+                            onPressed: () {
+                              Get.to(() => ProductScreen());
+                            },
+                            child: Text(
+                              'Products',
+                              style: TextStyle(fontSize: 15), // Smaller font size
+                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                              maxLines: 1, // Keep text on one line
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5), // Adjust spacing between buttons
+                        Flexible(
+                          flex: 1,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
+                            onPressed: () {
+                              Get.to(() => CategoryScreen());
+                            },
+                            child: Text(
+                              'Category',
+                              style: TextStyle(fontSize: 15), // Smaller font size
+                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                              maxLines: 1, // Keep text on one line
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5), // Adjust spacing between buttons
+                        Flexible(
+                          flex: 1,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
+                            onPressed: () {
+                              print('Reports');
+                            },
+                            child: Text(
+                              'Reports',
+                              style: TextStyle(fontSize: 15), // Smaller font size
+                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                              maxLines: 1, // Keep text on one line
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: 20),
-
-              // Cards Section (Users, Orders, Revenue)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Wrap each card with Expanded to avoid overflow
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0), // Reduce padding if necessary
-                      child: DashboardCard(
-                        title: 'Users',
-                        value: '1200',
-                        color: Colors.blue,
-                        onTap: () {
-                          print('Navigate to Users');
-                        },
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0), // Add left padding for spacing
-                      child: DashboardCard(
-                        title: 'Orders',
-                        value: '450',
-                        color: Colors.green,
-                        onTap: () {
-                          print('Navigate to Orders');
-                        },
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0), // Add left padding for spacing
-                      child: DashboardCard(
-                        title: 'Totals',
-                        value: '\$45,00',
-                        color: Colors.orange,
-                        onTap: () {
-                          print('Navigate to Revenue');
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-
-              // Stats Section (Buttons for Actions)
-              Text(
-                'Quản lý',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-
-              // Action Buttons (Manage Users, Manage Products, View Reports)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                      onPressed: () {
-                        print('Users');
-                      },
-                      child: Text(
-                        'Users',
-                        style: TextStyle(fontSize: 15), // Smaller font size
-                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                        maxLines: 1, // Keep text on one line
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 5), // Adjust spacing between buttons
-                  Flexible(
-                    flex: 1,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                      onPressed: () {
-                        print('Products');
-                        Get.to(() => ProductScreen());
-                      },
-                      child: Text(
-                        'Products',
-                        style: TextStyle(fontSize: 15), // Smaller font size
-                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                        maxLines: 1, // Keep text on one line
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 5), // Adjust spacing between buttons
-                  Flexible(
-                    flex: 1,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                      onPressed: () {
-                        print('Category');
-                        Get.to(() => CategoryScreen());
-                      },
-                      child: Text(
-                        'Category',
-                        style: TextStyle(fontSize: 15), // Smaller font size
-                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                        maxLines: 1, // Keep text on one line
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 5), // Adjust spacing between buttons
-                  Flexible(
-                    flex: 1,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                      onPressed: () {
-                        print('Reports');
-                      },
-                      child: Text(
-                        'Reports',
-                        style: TextStyle(fontSize: 15), // Smaller font size
-                        overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                        maxLines: 1, // Keep text on one line
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            ],
-          ),
+              );
+            } else {
+              return Center(child: Text('No data available'));
+            }
+          },
         ),
       ),
     );
@@ -222,6 +246,8 @@ class DashboardCard extends StatelessWidget {
 
 // Admin Drawer for navigation
 class AdminDrawer extends StatelessWidget {
+  final CurrentUSerAdmin _currentUserAdmin = Get.put(CurrentUSerAdmin());
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -242,7 +268,7 @@ class AdminDrawer extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Admin Name',
+                  _currentUserAdmin.user.user_name,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -251,7 +277,7 @@ class AdminDrawer extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'admin@example.com',
+                  _currentUserAdmin.user.user_email,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -272,7 +298,11 @@ class AdminDrawer extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('Manage Users'),
             onTap: () {
-              print('Navigate to Manage Users');
+              if (_currentUserAdmin.user.id_role == 3) {
+                Fluttertoast.showToast(msg: 'Bạn không có quyền truy cập');
+              } else {
+                Get.to(() => UserScreen());
+              }
             },
           ),
           ListTile(
@@ -300,7 +330,9 @@ class AdminDrawer extends StatelessWidget {
             leading: Icon(Icons.logout),
             title: Text('Logout'),
             onTap: () {
-              Get.off(LoginPage());
+              Userinforemember.removeUserAdmin().then((value) {
+                Get.off(LoginPage());
+              });
             },
           ),
         ],

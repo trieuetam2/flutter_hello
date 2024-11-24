@@ -16,6 +16,9 @@ class API{
   
   //admin
 
+  //dashboard
+  static const overViewDashboard = "$hostConnection/admin/overviewdashboard.php";
+
   //product
   static const addProduct = "$hostConnection/admin/addproduct.php";
   static const showProduct = "$hostConnection/admin/showproduct.php";
@@ -30,4 +33,10 @@ class API{
   static const editCategory = "$hostConnection/admin/editcategory.php";
   static const updateCategory = "$hostConnection/admin/updateCategory.php";
   static const searchCategory = "$hostConnection/admin/searchCategory.php";
+
+  //user
+  static const showUser = "$hostConnection/admin/showuser.php";
+  static const searchUser = "$hostConnection/admin/searchuser.php";
+  static const editUser = "$hostConnection/admin/edituser.php";
+  static const updateUser = "$hostConnection/admin/updateUser.php";
 }

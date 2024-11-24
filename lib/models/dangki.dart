@@ -4,8 +4,9 @@ class Dangki {
   String user_email;
   String user_password;
   int id_role;
+  int status;
 
-  Dangki(this.user_id, this.user_name, this.user_email, this.user_password, this.id_role);
+  Dangki(this.user_id, this.user_name, this.user_email, this.user_password, this.id_role, this.status);
 
   factory Dangki.fromJson(Map<String, dynamic> json){
     return Dangki(
@@ -14,6 +15,7 @@ class Dangki {
       json['user_email'],
       json['user_password'],
       int.parse(json['id_phanquyen']),
+      int.parse(json['trangthai']),
     );
   }
 
@@ -23,5 +25,6 @@ class Dangki {
     'user_email': user_email,
     'user_password': user_password,
     'id_phanquyen': id_role.toString(),
+    'trangthai': status.toString(),
   };
 }

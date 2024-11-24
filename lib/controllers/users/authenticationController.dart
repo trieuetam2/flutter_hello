@@ -52,50 +52,68 @@ class AuthenticationController extends GetxController {
   }
 
   //function logic login and save to local store
-  Future<bool> loginUser(String email, String password) async {
-    try {
-      var res = await http.post(
-        Uri.parse(API.logIn),
-        body: {
-          "user_email": email.trim(),
-          "user_password": password.trim(),
-        },
-      );
+Future<bool> loginUser(String email, String password) async {
+  try {
+    var res = await http.post(
+      Uri.parse(API.logIn),
+      body: {
+        "user_email": email.trim(),
+        "user_password": password.trim(),
+      },
+    );
 
-      if (res.statusCode == 200) {
-        var resbodyLogin = jsonDecode(res.body);
-        if (resbodyLogin['successLogin'] == true) {
-          Fluttertoast.showToast(msg: 'Đăng nhập thành công');
+    if (res.statusCode == 200) {
+      var resbodyLogin = jsonDecode(res.body);
 
-          // Save user data in local storage using your saveRememberUser method
-          Dangki userInfo = Dangki.fromJson(resbodyLogin['userData']);
+      if (resbodyLogin['successLogin'] == true) {
+        Dangki userInfo = Dangki.fromJson(resbodyLogin['userData']);
 
-          if (userInfo.id_role == 1) {
+        if (userInfo.status == 2) {
+          // Account is locked
+          Fluttertoast.showToast(msg: 'Tài khoản của bạn đã bị khóa');
+          return false;
+        }
+        else{
+        // If user is not locked, proceed to the correct dashboard
+
+          
+
+          if (userInfo.id_role == 1 || userInfo.id_role == 3) {
+            await Userinforemember.saveRememberUserAdmin(userInfo);
+            // If the user is an admin (id_role == 1)
             Future.delayed(Duration(milliseconds: 2000), () {
+              Fluttertoast.showToast(msg: 'Đăng nhập thành công admin');
+              
               Get.to(() => AdminDashboard());
             });
-          }
-          else{
-            await Userinforemember.saveRememberUser(userInfo);
+          } else {
 
-            // You can use Get.to() to navigate to the dashboard
+            await Userinforemember.saveRememberUser(userInfo);
+            Fluttertoast.showToast(msg: 'Đăng nhập thành công');
+            // If the user is a regular user
+            
             Future.delayed(Duration(milliseconds: 2000), () {
               Get.to(() => Dashboard());
             });
           }
 
           return true; // Login successful
-        } else {
-          Fluttertoast.showToast(msg: 'Sai tên tài khoản hoặc mật khẩu');
-          return false; // Invalid credentials
         }
+
       } else {
-        throw Exception('Failed to login');
+        Fluttertoast.showToast(msg: 'Sai tên tài khoản hoặc mật khẩu');
+        return false; // Invalid credentials
       }
-    } catch (e) {
-      print('Error during login: $e');
-      Fluttertoast.showToast(msg: e.toString());
-      return false;
+    } else {
+      throw Exception('Failed to login');
     }
+  } catch (e) {
+    print('Error during login: $e');
+    Fluttertoast.showToast(msg: e.toString());
+    return false;
   }
+}
+
+
+
 }

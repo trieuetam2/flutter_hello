@@ -44,6 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
           email,
           _passwordController.text.trim(),
           2,
+          1
         );
 
         bool registrationSuccess = await _authController.registerUser(userModel);
