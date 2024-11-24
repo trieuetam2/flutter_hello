@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/services/userInfoRemember.dart';
 import 'package:flutter_application_1/views/admin/category_screen.dart';
+import 'package:flutter_application_1/views/admin/order_screen.dart';
 import 'package:flutter_application_1/views/admin/product_screen.dart';
 import 'package:flutter_application_1/views/admin/user_screen.dart';
 import 'package:flutter_application_1/views/users/login_page.dart';
@@ -153,6 +154,22 @@ class AdminDashboard extends StatelessWidget {
                             },
                             child: Text(
                               'Category',
+                              style: TextStyle(fontSize: 15), // Smaller font size
+                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
+                              maxLines: 1, // Keep text on one line
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 5), // Adjust spacing between buttons
+                        Flexible(
+                          flex: 1,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
+                            onPressed: () {
+                              Get.to(() => OrderScreen());
+                            },
+                            child: Text(
+                              'Orders',
                               style: TextStyle(fontSize: 15), // Smaller font size
                               overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
                               maxLines: 1, // Keep text on one line
@@ -317,6 +334,13 @@ class AdminDrawer extends StatelessWidget {
             title: Text('Manage Categories'),
             onTap: () {
               Get.to(() => CategoryScreen());
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.add_box),
+            title: Text('Manage Orders'),
+            onTap: () {
+              Get.to(() => OrderScreen());
             },
           ),
           ListTile(

@@ -39,4 +39,8 @@ class API{
   static const searchUser = "$hostConnection/admin/searchuser.php";
   static const editUser = "$hostConnection/admin/edituser.php";
   static const updateUser = "$hostConnection/admin/updateUser.php";
+
+  //order
+  static const showOrderManage = "$hostConnection/admin/showordermanage.php";
+  static const updateOrderStatus = "$hostConnection/admin/updateOderStatus.php";
 }
