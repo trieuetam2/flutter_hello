@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/cartitem.dart';
 import 'package:flutter_application_1/services/cart.dart';
 import 'package:flutter_application_1/views/users/checkout_screen.dart';
+import 'package:intl/intl.dart';
 
 class CartScreen extends StatefulWidget {
   @override
@@ -85,6 +86,16 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  String formatToVND(double value) {
+  final formatter = NumberFormat.currency(
+    locale: 'vi_VN',  // Vietnamese locale
+    symbol: '₫',      // Vietnamese Dong symbol
+    decimalDigits: 0, // Optional: set number of decimal digits
+  );
+  
+  return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +132,13 @@ class _CartScreenState extends State<CartScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Giá: ${cartItem.giasp} VND'),
+                      Text(
+                      'Giá: ${formatToVND(
+                        cartItem.giasp is int
+                            ? cartItem.giasp.toDouble()  // If it's an int, convert it to double
+                            : double.parse(cartItem.giasp.toString())  // If it's a string, parse it
+                      )}',
+                    ),
                       Text('Số lượng: ${cartItem.soluong}'),
                     ],
                   ),
@@ -173,7 +190,8 @@ class _CartScreenState extends State<CartScreen> {
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                       child: Text(
-                        'Thanh toán - Tổng tiền: ${getTotalPrice()} VND',
+                        'Thanh toán - Tổng tiền: ${formatToVND(getTotalPrice())}',
+                        
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

@@ -12,6 +12,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem> cartItems; // Pass cart items from the previous screen
   const CheckoutScreen({Key? key, required this.cartItems}) : super(key: key);
@@ -129,7 +131,6 @@ Future<void> checkout() async {
   }
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,7 +182,7 @@ Future<void> checkout() async {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total Amount:',
+                    'Tổng thanh toán:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(

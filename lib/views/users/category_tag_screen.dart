@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/views/users/detail_product_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class CategoryTagScreen extends StatefulWidget {
   final String productId;  // Declare the parameter
@@ -87,6 +88,16 @@ class _CategoryTagScreenState extends State<CategoryTagScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
+    String formatToVND(double value) {
+  final formatter = NumberFormat.currency(
+    locale: 'vi_VN',  // Vietnamese locale
+    symbol: '₫',      // Vietnamese Dong symbol
+    decimalDigits: 0, // Optional: set number of decimal digits
+  );
+  
+  return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,66 +126,70 @@ class _CategoryTagScreenState extends State<CategoryTagScreen> {
         foregroundColor: Colors.white, // Màu chữ của AppBar
       ),
 
-      body: products.isEmpty
-          ? Center(child: CircularProgressIndicator()) // Show a loading indicator while fetching data
-          : GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.7,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                var product = products[index];
-                return Card(
-                  elevation: 5,
-                  child: InkWell(
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailProductScreen(
-                            productId: product['id_sanpham'],
-                          ),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Show product image
-                       Image.asset(
-                          product['anhsp'] != null && product['anhsp'].isNotEmpty
-                              ? '${product['anhsp']}' // Nếu có đường dẫn hình ảnh trong assets
-                              : 'assets/img/pig.png', // Sử dụng placeholder nếu không có hình ảnh
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal: 8.0),
-                          child: Text(
-                            product['tensp'],
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                          child: Text(
-                            '${product['giasp']} VND',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green.shade400),
-                          ),
-                        ),
-                      ],
+  body: products.isEmpty
+    ? Center(child: CircularProgressIndicator()) // Show a loading indicator while fetching data
+    : GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.7,
+        ),
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          var product = products[index];
+          return Card(
+            elevation: 5,
+            child: InkWell(
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailProductScreen(
+                      productId: product['id_sanpham'],
                     ),
                   ),
                 );
               },
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0), // Add top padding here
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Show product image
+                    Image.asset(
+                      product['anhsp'] != null && product['anhsp'].isNotEmpty
+                          ? '${product['anhsp']}' // If there's an image path in assets
+                          : 'assets/img/pig.png', // Use placeholder if no image
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+                      child: Text(
+                        product['tensp'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                      child: Text(
+                        '${formatToVND(double.parse(product['giasp']))}',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green.shade400),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
+          );
+        },
+      ),
+
     );
   }
 }

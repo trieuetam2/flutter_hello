@@ -9,6 +9,7 @@ import 'package:flutter_application_1/views/users/detail_product_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -23,6 +24,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     controller.fetchProducts(); // Fetch products when screen initializes
     controller.fetchCategory(); // Fetch categories when screen initializes
+  }
+
+  String formatToVND(double value) {
+  final formatter = NumberFormat.currency(
+    locale: 'vi_VN',  // Vietnamese locale
+    symbol: '₫',      // Vietnamese Dong symbol
+    decimalDigits: 0, // Optional: set number of decimal digits
+  );
+  
+  return formatter.format(value);
   }
 
   @override
@@ -141,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
                                     child: Text(
-                                      '${product['giasp']} VND',
+                                      '${formatToVND(double.parse(product['giasp']))}',
                                       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green.shade400),
                                     ),
                                   ),

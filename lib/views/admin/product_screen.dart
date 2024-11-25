@@ -6,6 +6,7 @@ import 'package:flutter_application_1/views/admin/edit_product_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ProductScreen extends StatefulWidget {
   @override
@@ -174,6 +175,15 @@ void filterProducts(String query) async {
   }
 }
 
+  String formatToVND(double value) {
+    final formatter = NumberFormat.currency(
+      locale: 'vi_VN', // Vietnamese locale
+      symbol: '₫',     // Vietnamese Dong symbol
+      decimalDigits: 0, // Optional: set decimal places to 0
+    );
+    return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,7 +242,7 @@ void filterProducts(String query) async {
                                 fit: BoxFit.cover,  // Điều chỉnh cách hiển thị hình ảnh
                               ),
                               title: Text(product['tensp']),
-                              subtitle: Text('Price: ${product['giasp']} VND'),
+                              subtitle: Text('Price: ${formatToVND(double.parse(product['giasp']))}'),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[

@@ -6,10 +6,12 @@ import 'package:flutter_application_1/views/admin/category_screen.dart';
 import 'package:flutter_application_1/views/admin/order_screen.dart';
 import 'package:flutter_application_1/views/admin/product_screen.dart';
 import 'package:flutter_application_1/views/admin/user_screen.dart';
+import 'package:flutter_application_1/views/admin/view_reports_screen.dart';
 import 'package:flutter_application_1/views/users/login_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class AdminDashboard extends StatelessWidget {
   final CurrentUSerAdmin _currentUserAdmin = Get.put(CurrentUSerAdmin());
@@ -26,6 +28,16 @@ class AdminDashboard extends StatelessWidget {
       // If the server does not return a 200 OK response, throw an error.
       throw Exception('Failed to load dashboard counts');
     }
+  }
+
+  String formatToVND(double value) {
+  final formatter = NumberFormat.currency(
+    locale: 'vi_VN',  // Vietnamese locale
+    symbol: '₫',      // Vietnamese Dong symbol
+    decimalDigits: 0, // Optional: set number of decimal digits
+  );
+  
+  return formatter.format(value);
   }
 
   @override
@@ -53,47 +65,40 @@ class AdminDashboard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Overview Section (Cards)
-                    Text(
-                      'Overview',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
                     // Cards Section (Users, Orders, Revenue)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        DashboardCard(
-                          title: 'Users',
-                          value: data['user_count'].toString(),
-                          color: Colors.blue,
-                          onTap: () {
-                            Get.to(() => UserScreen());
-                          },
-                        ),
-                        DashboardCard(
-                          title: 'Orders',
-                          value: data['order_count'].toString(),
-                          color: Colors.green,
-                          onTap: () {
-                            Get.to(() => ProductScreen());
-                          },
-                        ),
-                        DashboardCard(
-                          title: 'Total Revenue',
-                          value: '\$${data['total_revenue']}',
-                          color: Colors.orange,
-                          onTap: () {
-                            Get.to(() => CategoryScreen());
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    DashboardCard(
+      title: 'Users',
+      value: data['user_count'].toString(),
+      color: Colors.blue,
+      onTap: () {
+        Get.to(() => UserScreen());
+      },
+      animateValue: data['user_count'], // Thêm giá trị cần tăng dần vào đây
+    ),
+    DashboardCard(
+      title: 'Orders',
+      value: data['order_count'].toString(),
+      color: Colors.green,
+      onTap: () {
+        Get.to(() => ProductScreen());
+      },
+      animateValue: data['order_count'], // Thêm giá trị cần tăng dần vào đây
+    ),
+    DashboardCard(
+      title: 'Ước tính',
+      value: formatToVND(double.parse(data['total_revenue'])),
+      color: Colors.orange,
+      onTap: () {
+        Get.to(() => CategoryScreen());
+      },
+      animateValue: data['total_revenue'], // Thêm giá trị cần tăng dần vào đây
+    ),
+  ],
+),
+SizedBox(height: 20),
 
                     // Stats Section (Buttons for Actions)
                     Text(
@@ -106,94 +111,35 @@ class AdminDashboard extends StatelessWidget {
                     SizedBox(height: 20),
 
                     // Action Buttons (Manage Users, Manage Products, View Reports)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                            onPressed: () {
-                              if (_currentUserAdmin.user.id_role == 3) {
-                                Fluttertoast.showToast(msg: 'Bạn không có quyền truy cập');
-                              } else {
-                                Get.to(() => UserScreen());
-                              }
-                            },
-                            child: Text(
-                              'Users',
-                              style: TextStyle(fontSize: 15), // Smaller font size
-                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                              maxLines: 1, // Keep text on one line
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 5), // Adjust spacing between buttons
-                        Flexible(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                            onPressed: () {
-                              Get.to(() => ProductScreen());
-                            },
-                            child: Text(
-                              'Products',
-                              style: TextStyle(fontSize: 15), // Smaller font size
-                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                              maxLines: 1, // Keep text on one line
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 5), // Adjust spacing between buttons
-                        Flexible(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                            onPressed: () {
-                              Get.to(() => CategoryScreen());
-                            },
-                            child: Text(
-                              'Category',
-                              style: TextStyle(fontSize: 15), // Smaller font size
-                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                              maxLines: 1, // Keep text on one line
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 5), // Adjust spacing between buttons
-                        Flexible(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                            onPressed: () {
-                              Get.to(() => OrderScreen());
-                            },
-                            child: Text(
-                              'Orders',
-                              style: TextStyle(fontSize: 15), // Smaller font size
-                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                              maxLines: 1, // Keep text on one line
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 5), // Adjust spacing between buttons
-                        Flexible(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)), // Remove padding inside the button
-                            onPressed: () {
-                              print('Reports');
-                            },
-                            child: Text(
-                              'Reports',
-                              style: TextStyle(fontSize: 15), // Smaller font size
-                              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-                              maxLines: 1, // Keep text on one line
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                   SingleChildScrollView(
+  scrollDirection: Axis.horizontal,  // Cho phép cuộn ngang
+  child: Wrap(
+    spacing: 8.0,  // Khoảng cách giữa các nút
+    runSpacing: 8.0,  // Khoảng cách giữa các dòng
+    children: [
+      _buildButton('Users', () {
+        if (_currentUserAdmin.user.id_role == 3) {
+          Fluttertoast.showToast(msg: 'Bạn không có quyền truy cập');
+        } else {
+          Get.to(() => UserScreen());
+        }
+      }),
+      _buildButton('Products', () {
+        Get.to(() => ProductScreen());
+      }),
+      _buildButton('Category', () {
+        Get.to(() => CategoryScreen());
+      }),
+      _buildButton('Orders', () {
+        Get.to(() => OrderScreen());
+      }),
+      _buildButton('Reports', () {
+        Get.to(() => ViewReportsScreen());
+      }),
+    ],
+  ),
+)
+
                   ],
                 ),
               );
@@ -207,22 +153,42 @@ class AdminDashboard extends StatelessWidget {
   }
 }
 
-// Dashboard card widget for quick stats (Users, Orders, Revenue)
+Widget _buildButton(String title, VoidCallback onPressed) {
+  return ElevatedButton(
+    style: ElevatedButton.styleFrom(padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 6.0)),
+    onPressed: onPressed,
+    child: Text(
+      title,
+      style: TextStyle(fontSize: 15),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    ),
+  );
+}
+
+
 class DashboardCard extends StatelessWidget {
   final String title;
   final String value;
   final Color color;
   final VoidCallback onTap;
+  final dynamic animateValue;  // Thêm trường animateValue
 
   DashboardCard({
     required this.title,
     required this.value,
     required this.color,
     required this.onTap,
+    required this.animateValue,  // Thêm tham số animateValue
   });
 
   @override
   Widget build(BuildContext context) {
+    // Chuyển đổi value sang double nếu nó là String
+    final double animateValueDouble = (animateValue is String)
+        ? double.tryParse(animateValue) ?? 0.0 // Nếu animateValue là String, chuyển sang double
+        : animateValue.toDouble();  // Nếu animateValue đã là double, giữ nguyên
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -245,13 +211,21 @@ class DashboardCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8),
-              Text(
-                value,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+
+              // Sử dụng TweenAnimationBuilder để tạo hiệu ứng tăng số
+              TweenAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: animateValueDouble), // Hiệu ứng từ 0 đến giá trị hiện tại
+                duration: Duration(seconds: 2), // Thời gian hiệu ứng
+                builder: (context, value, child) {
+                  return Text(
+                    value.toStringAsFixed(0), // Hiển thị giá trị sau khi đã tăng dần
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -260,6 +234,7 @@ class DashboardCard extends StatelessWidget {
     );
   }
 }
+
 
 // Admin Drawer for navigation
 class AdminDrawer extends StatelessWidget {
@@ -347,7 +322,7 @@ class AdminDrawer extends StatelessWidget {
             leading: Icon(Icons.bar_chart),
             title: Text('View Reports'),
             onTap: () {
-              print('Navigate to Reports');
+              Get.to(() => ViewReportsScreen());
             },
           ),
           ListTile(

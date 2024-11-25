@@ -47,6 +47,20 @@ class _OrderScreenState extends State<OrderScreen> {
     }
   }
 
+  Color _getStatusColor(String trangthai) {
+    switch (trangthai) {
+      case 'Chờ xác nhận':
+        return Colors.blue;
+      case 'Chờ giao hàng':
+        return Colors.orange;
+      case 'Đang giao hàng':
+      case 'Giao thành công':
+        return Colors.green;
+      default:
+        return Colors.grey; // Default color if the status doesn't match any
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +87,18 @@ class _OrderScreenState extends State<OrderScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Trạng thái: ${order.trangthai}', style: TextStyle(fontSize: 14)),
+                          Row(
+                            children: [
+                              Text('Trạng thái: '),
+                              Text(
+                                '${order.trangthai}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: _getStatusColor(order.trangthai),
+                                ),
+                              ),
+                            ],
+                          ),
                           Text('Thành tiền: ${order.tongtien} VND', style: TextStyle(fontSize: 14)),
                         ],
                       ),

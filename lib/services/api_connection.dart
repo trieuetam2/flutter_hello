@@ -43,4 +43,8 @@ class API{
   //order
   static const showOrderManage = "$hostConnection/admin/showordermanage.php";
   static const updateOrderStatus = "$hostConnection/admin/updateOderStatus.php";
+  static const searchOrder = "$hostConnection/admin/searchOrder.php";
+
+  //view report
+  static const viewDoanhThuNgay = "$hostConnection/admin/viewDoanhThuNgay.php";
 }

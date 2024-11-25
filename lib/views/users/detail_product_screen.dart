@@ -6,6 +6,7 @@ import 'package:flutter_application_1/services/api_connection.dart';
 import 'package:flutter_application_1/services/cart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DetailProductScreen extends StatefulWidget {
   final String productId;
@@ -65,6 +66,16 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
     }
   }
 
+  String formatToVND(double value) {
+  final formatter = NumberFormat.currency(
+    locale: 'vi_VN',  // Vietnamese locale
+    symbol: '₫',      // Vietnamese Dong symbol
+    decimalDigits: 0, // Optional: set number of decimal digits
+  );
+  
+  return formatter.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,13 +116,18 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
                         SizedBox(height: 8),
 
                         // Product Price
-                        Text(
-                          'Giá: ${productDetail['giasp']} VND',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.green.shade600,
-                          ),
-                        ),
+Text(
+  'Giá: ${formatToVND(
+    productDetail['giasp'] is int
+        ? productDetail['giasp'].toDouble()  // If it's an int, convert it to double
+        : double.parse(productDetail['giasp'].toString())  // If it's a string, parse it
+  )}',
+  style: TextStyle(
+    fontSize: 20,
+    color: Colors.green.shade600,
+  ),
+),
+
                         SizedBox(height: 16),
 
                         // Product Soluong (Stock Quantity)
