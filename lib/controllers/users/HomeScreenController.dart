@@ -1,10 +1,14 @@
 // home_screen_controller.dart
 import 'dart:convert';
 import 'package:flutter_application_1/services/api_connection.dart';
+import 'package:flutter_application_1/services/jwt_save_get.dart';
+import 'package:flutter_application_1/views/users/login_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/models/danhmuc.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreenController extends GetxController {
   var products = <Map<String, dynamic>>[].obs;
@@ -24,7 +28,29 @@ class HomeScreenController extends GetxController {
 
   // Hàm tải sản phẩm home page
   Future<void> fetchProducts() async {
-    final response = await http.get(Uri.parse(API.showClientProduct));
+  try {
+    String? jwt = await getJWT();
+
+    if (jwt == null) {
+      Fluttertoast.showToast(msg: 'No JWT token found');
+      return;  // Early exit if no JWT token is available
+    }
+
+    // Decode JWT and check if it is expired
+    if (JwtDecoder.isExpired(jwt)) {
+      Fluttertoast.showToast(msg: 'Your session has expired. Please log in again.');
+      Get.to(() => LoginPage()); // Navigate to the login screen
+      return;
+    }
+
+    // Make the request with the JWT in the Authorization header
+    final response = await http.get(
+      Uri.parse(API.showClientProduct),
+      headers: {
+        'Authorization': 'Bearer $jwt',  // Attach JWT as a Bearer token
+      },
+    );
+
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       if (jsonResponse['showProduct'] == true && jsonResponse['products'] != null) {
@@ -37,9 +63,19 @@ class HomeScreenController extends GetxController {
             "giasp": product['giasp'],
           };
         }).toList();
+      } else {
+        Fluttertoast.showToast(msg: 'No products available');
       }
+    } else {
+      // Handle non-200 status codes
+      Fluttertoast.showToast(msg: 'Failed to load products');
     }
+  } catch (e) {
+    print('Error fetching products: $e');
+    Fluttertoast.showToast(msg: 'Error fetching products: $e');
   }
+}
+
 
   // Hàm lọc sản phẩm home page
   Future<void> filterProducts(String query) async {

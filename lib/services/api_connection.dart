@@ -1,5 +1,5 @@
 class API{
-  static const hostConnection = 'https://192.168.1.14/flutter_api';
+  static const hostConnection = 'https://192.168.1.154/flutter_api';
   static const hostConnectionUser = '$hostConnection/user';
 
   //signup user

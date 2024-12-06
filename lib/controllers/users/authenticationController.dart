@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_application_1/models/dangki.dart';
 import 'package:flutter_application_1/services/api_connection.dart';
+import 'package:flutter_application_1/services/jwt_save_get.dart';
 import 'package:flutter_application_1/views/admin/admin_dashboard.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -67,39 +68,34 @@ Future<bool> loginUser(String email, String password) async {
 
       if (resbodyLogin['successLogin'] == true) {
         Dangki userInfo = Dangki.fromJson(resbodyLogin['userData']);
+        
+        if (resbodyLogin['jwt'] != null) {
+          // Save JWT to SharedPreferences
+          await saveJWT(resbodyLogin['jwt']);
+        }
 
+        print("token: " + resbodyLogin['jwt']);
+
+        // Handle other user checks (locked account, role, etc.)
         if (userInfo.status == 2) {
-          // Account is locked
           Fluttertoast.showToast(msg: 'Tài khoản của bạn đã bị khóa');
           return false;
-        }
-        else{
-        // If user is not locked, proceed to the correct dashboard
-
-          
-
+        } else {
           if (userInfo.id_role == 1 || userInfo.id_role == 3) {
             await Userinforemember.saveRememberUserAdmin(userInfo);
-            // If the user is an admin (id_role == 1)
             Future.delayed(Duration(milliseconds: 2000), () {
               Fluttertoast.showToast(msg: 'Đăng nhập thành công admin');
-              
               Get.to(() => AdminDashboard());
             });
           } else {
-
             await Userinforemember.saveRememberUser(userInfo);
             Fluttertoast.showToast(msg: 'Đăng nhập thành công');
-            // If the user is a regular user
-            
             Future.delayed(Duration(milliseconds: 2000), () {
               Get.to(() => Dashboard());
             });
           }
-
           return true; // Login successful
         }
-
       } else {
         Fluttertoast.showToast(msg: 'Sai tên tài khoản hoặc mật khẩu');
         return false; // Invalid credentials
@@ -113,7 +109,6 @@ Future<bool> loginUser(String email, String password) async {
     return false;
   }
 }
-
 
 
 }

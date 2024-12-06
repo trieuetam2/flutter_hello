@@ -13,7 +13,7 @@ class Dangki {
       int.parse(json['user_id']), 
       json['user_name'],
       json['user_email'],
-      json['user_password'],
+      json['user_password'] ?? '',
       int.parse(json['id_phanquyen']),
       int.parse(json['trangthai']),
     );
