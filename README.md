@@ -15,7 +15,7 @@
 - **xem trạng thái sản phẩm, thông tin sản phẩm, khách hàng**
 
 ### 2. Admin
-- **Trang quản trị phân quyền dùng middleware**
+- **Trang quản trị phân quyền dùng**
 - **Đăng nhập admin**
 - **Tổng quan (Dashboard)**
 - **Quản lý đơn hàng**
