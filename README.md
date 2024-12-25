@@ -1,6 +1,6 @@
-## Shop thú cưng Laravel
+## Shop thú cưng Flutter
 
-## *Thông tin project Source code website thương mại điện tử cửa hàng thú cưng Laravel 10 + MySQL
+## *Thông tin project Source code website thương mại điện tử cửa hàng thú cưng Flutter API PHP Mysql
 
 ## *Các Chức năng
 
