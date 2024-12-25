@@ -26,25 +26,25 @@
 - **Thống kê doanh thu tổng quan**
 
 ## Hình minh họa code
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh1.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh1.JPG" width="100% height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 1</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh2.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh2.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 2</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh3.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh3.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 3</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh4.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh4.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 4</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh5.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh5.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 5</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh6.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh6.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 6</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh7.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh7.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 7</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh8.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh8.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 8</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh9.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh9.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 9</h3>
-<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh10.JPG" width="100%" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
+<p align="center"><a href="#"><img src="https://github.com/trieuetam2/flutter_hello/blob/final/assets/img/hinh10.JPG" width="100%" height="200px" alt="shop-thu-cung-laravel-hinh-1.PNG"></a></p>
 <h3 align="center">Hình 10</h3>
 
 
